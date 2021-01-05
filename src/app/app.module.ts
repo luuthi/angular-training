@@ -1,18 +1,21 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {FormsModule} from '@angular/forms';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
+import {AppComponent} from './app.component';
+import {fakeBackendProvider} from './core/services/fake-backend';
+import {AccountService} from './core/services/account.service';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+  imports: [BrowserModule, FormsModule, HttpClientModule],
+  declarations: [AppComponent],
+  bootstrap: [AppComponent],
+  providers: [
+    // provider used to create fake backend,
+    AccountService,
+    fakeBackendProvider
+  ]
 })
-export class AppModule { }
+export class AppModule {
+}
