@@ -15,7 +15,11 @@ export class AccountService {
     let params = new HttpParams();
     params = params.append('limit', param.limit.toString());
     params = params.append('start', param.start.toString());
-    params = params.append('search', param.search.toString());
+    params = params.append('last_name', param.last_name.toString());
+    params = params.append('first_name', param.first_name.toString());
+    params = params.append('gender', param.gender.toString());
+    params = params.append('email', param.email.toString());
+    params = params.append('address', param.address.toString());
     return this.http.get<Account[]>('/accounts', {
       params
     });
