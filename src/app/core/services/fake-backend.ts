@@ -101,10 +101,28 @@ export class FakeBackendInterceptor implements HttpInterceptor {
       paramSearch = createParamSearch({
         limit: parseInt(params.get('limit') || '10', 0),
         start: parseInt(params.get('start') || '0', 0),
-        search: params.has('search') ? params.get('search') || '' : '',
+        last_name: params.has('last_name') ? params.get('last_name') || '' : '',
+        address: params.has('address') ? params.get('address') || '' : '',
+        email: params.has('email') ? params.get('email') || '' : '',
+        first_name: params.has('first_name') ? params.get('first_name') || '' : '',
+        gender: params.has('gender') ? params.get('gender') || '' : '',
       });
-      const rs = accountList.filter((x: Account) => x.firstname.includes(paramSearch.search)
-        || x.lastname.includes(paramSearch.search));
+      let rs = accountList;
+      if (paramSearch.last_name !== '') {
+        rs = rs.filter((x: Account) => x.lastname.includes(paramSearch.last_name));
+      }
+      if (paramSearch.first_name !== '') {
+        rs = rs.filter((x: Account) => x.firstname.includes(paramSearch.first_name));
+      }
+      if (paramSearch.address !== '') {
+        rs = rs.filter((x: Account) => x.address.includes(paramSearch.address));
+      }
+      if (paramSearch.email !== '') {
+        rs = rs.filter((x: Account) => x.email.includes(paramSearch.email));
+      }
+      if (paramSearch.gender !== '') {
+        rs = rs.filter((x: Account) => x.gender.includes(paramSearch.gender));
+      }
       if (rs.length < paramSearch.start) {
         return ok([]);
       }
@@ -132,6 +150,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
       // }
       const account = body as Account;
       // validate account
+      validateAccount(account);
 
       const newAccount = createAccount({
         account_number: account.account_number,
@@ -159,6 +178,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
       const account = body as Account;
       // validate account
+      validateAccount(account);
 
       const rs = accountList.filter((x: Account) => x._id === idFromUrl());
       if (rs.length === 0) {
@@ -198,6 +218,29 @@ export class FakeBackendInterceptor implements HttpInterceptor {
     }
 
     // helper functions
+
+    function validateAccount(account: Account): any {
+      const rsAcc = accountList.filter(
+        (x: Account) =>
+          x.account_number === account.account_number && x._id !== account._id
+      );
+      if (rsAcc.length > 0) {
+        return error(
+          'Existed account with account number ' + account.account_number
+        );
+      }
+      if (account.age <= 0) {
+        return error('Age must great than 0 ');
+      }
+      if (account.balance <= 0) {
+        return error('Balance must great than 0 ');
+      }
+      const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+      const regEmail = new RegExp(regex);
+      if (!regEmail.test(account.email)) {
+        return error('Email is wrong format ');
+      }
+    }
 
     // tslint:disable-next-line:typedef
     function ok(bodyData: any) {

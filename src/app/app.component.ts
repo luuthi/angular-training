@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
 
   getAllAccount(): void {
     this.accountService.getAccounts(createParamSearch({
-      search: this.searchStr,
+      last_name: this.searchStr,
       start: 0,
       limit: 10
     }))
